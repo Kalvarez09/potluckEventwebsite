@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plan and join events with your neighbors.">
+  <meta name="theme-color" content="#f4f3ee">
+  <title>Neighbor Events</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Top bar (only when logged in) -->
+  <header id="topbar" class="topbar" hidden>
+    <button type="button" class="brand" data-action="home">
+      <span aria-hidden="true">🏠</span> Neighbor Events
+    </button>
+    <div class="topbar-user">
+      <span id="topbar-avatar" class="avatar" aria-hidden="true"></span>
+      <span id="topbar-name" class="topbar-name"></span>
+      <button type="button" class="icon-btn" data-action="logout" aria-label="Log out">
+        <span data-icon="logout"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app">
+
+    <!-- ========== Login / Sign up ========== -->
+    <section id="auth-screen" class="auth" aria-labelledby="auth-title" hidden>
+      <div class="auth-art" aria-hidden="true">
+        <span>🏠</span><span>🎉</span><span>🥗</span><span>🍰</span><span>🥤</span>
+      </div>
+      <h1 id="auth-title" tabindex="-1">Neighbor Events</h1>
+      <p class="muted auth-intro">Plan and join events with the people in your building.<br>Know who's coming and who brings what.</p>
+
+      <div class="toggle" role="group" aria-label="Log in or sign up">
+        <button type="button" data-auth="login" aria-pressed="true">Log in</button>
+        <button type="button" data-auth="signup" aria-pressed="false">Sign up</button>
+      </div>
+
+      <form id="login-form" class="card form" novalidate>
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" autocomplete="current-password" required>
+        </div>
+        <p id="login-error" class="form-error" role="alert"></p>
+        <button type="submit" class="primary-btn">Log in</button>
+      </form>
+
+      <form id="signup-form" class="card form" novalidate hidden>
+        <div class="field">
+          <label for="signup-name">Your name</label>
+          <input id="signup-name" type="text" autocomplete="name" required placeholder="e.g. Kevin">
+        </div>
+        <div class="field">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="signup-password">Password <span class="muted">(at least 6 characters)</span></label>
+          <input id="signup-password" type="password" autocomplete="new-password" minlength="6" required>
+        </div>
+        <p id="signup-error" class="form-error" role="alert"></p>
+        <button type="submit" class="primary-btn">Create account</button>
+      </form>
+    </section>
+
+    <!-- ========== Home: event list ========== -->
+    <section id="home-screen" aria-labelledby="home-title" hidden>
+      <div id="home-content"></div>
+      <footer class="footer">
+        <button type="button" class="link-btn" data-action="reset">Reset demo data</button>
+      </footer>
+    </section>
+
+    <!-- ========== Create / edit event ========== -->
+    <section id="form-screen" aria-labelledby="form-title" hidden>
+      <button type="button" class="back-btn" data-action="form-back">
+        <span data-icon="back"></span> Back
+      </button>
+      <h1 id="form-title" class="screen-title" tabindex="-1">Create an event</h1>
+
+      <form id="event-form" class="form">
+        <fieldset class="card form">
+          <legend class="card-legend"><span aria-hidden="true">📝</span> The basics</legend>
+          <div class="field">
+            <label for="f-title">Title</label>
+            <input id="f-title" type="text" required maxlength="60" placeholder="e.g. Rooftop BBQ">
+          </div>
+          <div class="field">
+            <label for="f-vibe">Vibe <span class="muted">(optional)</span></label>
+            <input id="f-vibe" type="text" maxlength="80" placeholder="e.g. Quiet, no alcohol, kids welcome">
+            <p class="field-hint">Tell guests what to expect: music, alcohol, kids, noise…</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="card form">
+          <legend class="card-legend"><span aria-hidden="true">📅</span> When</legend>
+          <div class="field">
+            <label for="f-date">Date</label>
+            <input id="f-date" type="date" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-start">Starts</label>
+              <input id="f-start" type="time" required>
+            </div>
+            <div class="field">
+              <label for="f-end">Ends</label>
+              <input id="f-end" type="time" required>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="card form">
+          <legend class="card-legend"><span aria-hidden="true">📍</span> Where</legend>
+          <div class="field">
+            <label for="f-location">Address or place</label>
+            <input id="f-location" type="text" required maxlength="80" placeholder="e.g. Somewhereweg 27, courtyard">
+          </div>
+          <div class="field">
+            <label for="f-maps">Google Maps link <span class="muted">(optional)</span></label>
+            <input id="f-maps" type="url" placeholder="https://maps.app.goo.gl/…">
+            <p class="field-hint">In Google Maps: find the place → Share → Copy link. If you leave this empty, we search the address.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="card form">
+          <legend class="card-legend"><span aria-hidden="true">👥</span> How many</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-capacity">Max. people</label>
+              <input id="f-capacity" type="number" min="1" max="500" value="30" required>
+            </div>
+            <div class="field">
+              <label for="f-portions">Portions per dish</label>
+              <input id="f-portions" type="number" min="1" max="100" value="10" required>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="card form">
+          <legend class="card-legend"><span aria-hidden="true">🧺</span> What should people bring?</legend>
+          <div class="field">
+            <label for="food-select">Choose from the list</label>
+            <div class="add-row">
+              <select id="food-select"></select>
+              <button type="button" id="food-add-btn" class="secondary-btn">Add</button>
+            </div>
+          </div>
+          <ul id="food-chips" class="chips" aria-label="Dishes on the bring-list"></ul>
+          <div class="field">
+            <label for="food-custom">Something else? <span class="muted">(separate with commas)</span></label>
+            <input id="food-custom" type="text" placeholder="e.g. Lemonade, Plates, Ice">
+          </div>
+        </fieldset>
+
+        <button id="form-submit" type="submit" class="primary-btn big">Create event</button>
+      </form>
+    </section>
+
+    <!-- ========== Event page ========== -->
+    <section id="event-screen" aria-labelledby="event-title" hidden>
+      <button type="button" class="back-btn" data-action="home">
+        <span data-icon="back"></span> All events
+      </button>
+      <div id="event-content"></div>
+    </section>
+
+    <!-- ========== Allergy & Diet ========== -->
+    <section id="diet-screen" aria-labelledby="diet-title" hidden>
+      <button type="button" class="back-btn" data-action="diet-back">
+        <span data-icon="back"></span> Back
+      </button>
+      <h1 id="diet-title" class="screen-title" tabindex="-1">Dietary and allergy info</h1>
+      <p class="muted">For <strong id="diet-event-name"></strong>. This helps the organizer plan food for everyone. Select all that apply, or none.</p>
+
+      <form id="diet-form" class="card">
+        <fieldset>
+          <legend class="visually-hidden">Dietary needs and allergies</legend>
+          <label class="check"><input type="checkbox" name="diet" value="vegetarian"> <span aria-hidden="true">🥕</span> Vegetarian</label>
+          <label class="check"><input type="checkbox" name="diet" value="vegan"> <span aria-hidden="true">🌱</span> Vegan</label>
+          <label class="check"><input type="checkbox" name="diet" value="gluten-free"> <span aria-hidden="true">🌾</span> Gluten-free</label>
+          <label class="check"><input type="checkbox" name="diet" value="nut-allergy"> <span aria-hidden="true">🥜</span> Nut allergy</label>
+          <label class="check"><input type="checkbox" name="diet" value="other" id="other-check"> <span aria-hidden="true">➕</span> Other</label>
+
+          <div id="other-wrap" class="field other-wrap" hidden>
+            <label for="other-text">Please describe</label>
+            <input id="other-text" type="text" maxlength="60" placeholder="e.g. lactose intolerant">
+          </div>
+        </fieldset>
+
+        <button type="submit" class="primary-btn">Submit</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- ========== Dialogs ========== -->
+  <dialog id="info-dialog" aria-labelledby="info-title">
+    <h2 id="info-title">Who's coming</h2>
+    <p id="info-text" class="dialog-big"></p>
+    <form method="dialog">
+      <button class="primary-btn">OK</button>
+    </form>
+  </dialog>
+
+  <dialog id="bring-dialog" aria-labelledby="bring-title">
+    <form id="bring-form">
+      <h2 id="bring-title"></h2>
+      <div class="field">
+        <label for="bring-note">What exactly will you bring? <span class="muted">(optional)</span></label>
+        <input id="bring-note" type="text" maxlength="60" placeholder="e.g. Caesar salad">
+        <p class="field-hint">Helps others pick something different.</p>
+      </div>
+      <div class="dialog-actions">
+        <button id="bring-confirm" type="submit" value="save" class="primary-btn">Yes, I'll bring it</button>
+        <button id="bring-remove" type="submit" value="remove" class="danger-btn">I won't bring it</button>
+        <button type="button" class="secondary-btn" data-close="bring-dialog">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="add-dialog" aria-labelledby="add-title">
+    <form id="add-form" novalidate>
+      <h2 id="add-title">Add something to bring</h2>
+      <div class="field">
+        <label for="add-type">What is it?</label>
+        <select id="add-type" required></select>
+      </div>
+      <div id="add-name-wrap" class="field" hidden>
+        <label for="add-name">Name</label>
+        <input id="add-name" type="text" maxlength="30" placeholder="e.g. Napkins">
+      </div>
+      <div class="field">
+        <label for="add-note">What exactly? <span class="muted">(optional)</span></label>
+        <input id="add-note" type="text" maxlength="60" placeholder="e.g. Homemade lemonade">
+      </div>
+      <label class="check"><input id="add-bring" type="checkbox" checked> I'll bring this myself</label>
+      <p id="add-error" class="form-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="submit" class="primary-btn">Add to the list</button>
+        <button type="button" class="secondary-btn" data-close="add-dialog">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="link-dialog" aria-labelledby="link-title">
+    <h2 id="link-title">Invite link</h2>
+    <p>Copy this link and send it to your neighbors, for example in the WhatsApp group.</p>
+    <label for="link-input" class="visually-hidden">Invite link</label>
+    <input id="link-input" class="link-input" type="text" readonly>
+    <form method="dialog">
+      <button class="primary-btn">Done</button>
+    </form>
+  </dialog>
+
+  <!-- Short confirmation messages -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
